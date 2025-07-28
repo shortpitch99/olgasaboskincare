@@ -1,0 +1,761 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { motion } from 'framer-motion';
+import { FiHeart, FiClock, FiArrowRight, FiPhone, FiMapPin, FiMail } from 'react-icons/fi';
+import axios from 'axios';
+
+const HomeContainer = styled.div`
+  min-height: 100vh;
+  background: linear-gradient(135deg, #fefcfe 0%, #fdf9fd 50%, #fcf7fc 100%);
+`;
+
+const HeroSection = styled.section`
+  background: transparent;
+  color: #2c3e50;
+  padding: 4rem 0 6rem;
+  text-align: center;
+  position: relative;
+  min-height: 70vh;
+  display: flex;
+  align-items: center;
+`;
+
+const HeroContent = styled(motion.div)`
+  position: relative;
+  z-index: 1;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 0 2rem;
+`;
+
+const LogoContainer = styled(motion.div)`
+  margin-bottom: 3rem;
+  
+  img {
+    max-width: 525px;
+    height: auto;
+    
+    @media (max-width: 768px) {
+      max-width: 400px;
+    }
+  }
+`;
+
+const PowerTagline = styled(motion.h2)`
+  font-size: 1.8rem;
+  font-weight: 500;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #e879a6;
+  margin-bottom: 4rem;
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-stretch: condensed;
+  line-height: 1.3;
+  text-align: center;
+  
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 3rem;
+  }
+`;
+
+const BookExperienceButton = styled(motion(Link))`
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.2rem 2.4rem;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 700;
+  font-size: 0.96rem;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: transparent;
+  color: #e879a6;
+  border: 2px solid #e879a6;
+  margin-top: 2rem;
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-stretch: condensed;
+  
+  &:hover {
+    transform: translateY(-3px);
+    background: rgba(232, 121, 166, 0.1);
+    box-shadow: 0 8px 25px rgba(232, 121, 166, 0.2);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 1rem 2rem;
+    font-size: 0.88rem;
+  }
+`;
+
+const WelcomeContent = styled(motion.div)`
+  margin-top: 4rem;
+  max-width: 800px;
+  text-align: center;
+`;
+
+const WelcomeTitle = styled(motion.h2)`
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: #e879a6;
+  margin-bottom: 2rem;
+  font-family: 'Calibri', 'Playfair Display', serif;
+  font-stretch: extra-condensed;
+  line-height: 1.2;
+
+  @media (max-width: 768px) {
+    font-size: 1.35rem;
+    margin-bottom: 1.5rem;
+  }
+`;
+
+const WelcomeText = styled(motion.p)`
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: #333;
+  margin-bottom: 1.2rem;
+  font-family: 'Calibri', 'Inter', sans-serif;
+  font-stretch: extra-condensed;
+
+  @media (max-width: 768px) {
+    font-size: 0.75rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+`;
+
+const LocationSection = styled(motion.div)`
+  margin-top: 4rem;
+  text-align: center;
+  padding: 2rem;
+  background: rgba(232, 121, 166, 0.05);
+  border-radius: 20px;
+  border: 1px solid rgba(232, 121, 166, 0.2);
+  max-width: 600px;
+`;
+
+const LocationTitle = styled(motion.h3)`
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #e879a6;
+  margin-bottom: 1rem;
+  font-family: 'Calibri', 'Playfair Display', serif;
+  font-stretch: condensed;
+
+  @media (max-width: 768px) {
+    font-size: 1.4rem;
+  }
+`;
+
+const LocationSubtitle = styled(motion.p)`
+  font-size: 1.1rem;
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-family: 'Calibri', 'Inter', sans-serif;
+  font-stretch: condensed;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+  }
+`;
+
+const LocationAddress = styled(motion.p)`
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: #555;
+  margin-bottom: 2rem;
+  font-family: 'Calibri', 'Inter', sans-serif;
+  font-stretch: condensed;
+
+  @media (max-width: 768px) {
+    font-size: 1rem;
+    line-height: 1.5;
+  }
+`;
+
+const MapButton = styled(motion.a)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  background: #e879a6;
+  color: white;
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-stretch: condensed;
+  box-shadow: 0 4px 15px rgba(232, 121, 166, 0.3);
+
+  &:hover {
+    background: #d55a93;
+    box-shadow: 0 6px 20px rgba(232, 121, 166, 0.4);
+  }
+
+  @media (max-width: 768px) {
+    padding: 0.8rem 1.6rem;
+    font-size: 0.9rem;
+  }
+`;
+
+const Button = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 1rem 2rem;
+  text-decoration: none;
+  border-radius: 50px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #d4af37 0%, #f4d03f 100%);
+  color: white;
+  box-shadow: 0 8px 25px rgba(212, 175, 55, 0.3);
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-stretch: condensed;
+  
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 35px rgba(212, 175, 55, 0.4);
+  }
+`;
+
+// About Section
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+  }
+  
+  p {
+    font-size: 0.9rem;
+    color: #666;
+    margin: 0;
+  }
+`;
+
+// Services Section
+const ServicesSection = styled.section`
+  padding: 6rem 0;
+  background: white;
+`;
+
+const SectionContainer = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 2rem;
+`;
+
+const SectionHeader = styled.div`
+  text-align: center;
+  margin-bottom: 4rem;
+  
+  h2 {
+    font-size: 3rem;
+    font-weight: 300;
+    margin-bottom: 1rem;
+    color: #2c3e50;
+    font-family: 'Calibri', 'Playfair Display', serif;
+    font-stretch: condensed;
+    
+    @media (max-width: 768px) {
+      font-size: 2.2rem;
+    }
+  }
+  
+  p {
+    font-size: 1.2rem;
+    color: #666;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+    font-family: 'Calibri', 'Arial', sans-serif;
+    font-stretch: condensed;
+  }
+`;
+
+const ViewAllLink = styled(Link)`
+  color: #d4af37;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    gap: 1rem;
+  }
+`;
+
+// Enhanced service cards
+const ItemsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ItemCard = styled(motion.div)`
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+  border: 1px solid #f0f0f0;
+  
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+  }
+`;
+
+const ItemImage = styled.div`
+  height: 160px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #d4af37;
+  font-size: 2.5rem;
+  position: relative;
+  overflow: hidden;
+`;
+
+const ItemContent = styled.div`
+  padding: 1.5rem;
+`;
+
+const ItemCategory = styled.span`
+  color: #d4af37;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+`;
+
+const ItemTitle = styled.h3`
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+  color: #2c3e50;
+`;
+
+const ItemDescription = styled.p`
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  font-size: 0.95rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+`;
+
+const ItemDetails = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+`;
+
+const ItemPrice = styled.span`
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #d4af37;
+`;
+
+const ItemDuration = styled.span`
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: #666;
+  font-size: 0.9rem;
+`;
+
+// Contact CTA Section
+const CTASection = styled.section`
+  padding: 6rem 0;
+  background: #f8f9fa;
+  text-align: center;
+`;
+
+const CTATitle = styled.h2`
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin-bottom: 1rem;
+  color: #2c3e50;
+  font-family: 'Calibri', 'Playfair Display', serif;
+  font-stretch: condensed;
+`;
+
+const CTASubtitle = styled.p`
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-stretch: condensed;
+`;
+
+const ContactInfo = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  margin: 3rem 0;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+`;
+
+const ContactItem = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+  
+  .icon {
+    color: #d4af37;
+    font-size: 1.5rem;
+  }
+  
+  div {
+    text-align: left;
+    
+    h4 {
+      font-size: 1rem;
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      color: #2c3e50;
+    }
+    
+    p {
+      font-size: 0.9rem;
+      color: #666;
+      margin: 0;
+    }
+  }
+`;
+
+const ServiceTabs = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  flex-wrap: wrap;
+  
+  @media (max-width: 768px) {
+    gap: 0.5rem;
+  }
+`;
+
+const ServiceTab = styled.button`
+  background: ${props => props.active ? 'linear-gradient(135deg, #d4af37 0%, #f4d03f 100%)' : 'transparent'};
+  color: ${props => props.active ? 'white' : '#c2185b'};
+  border: 2px solid ${props => props.active ? 'transparent' : '#e879a6'};
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-stretch: condensed;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  
+  &:hover {
+    background: ${props => props.active ? 'linear-gradient(135deg, #d4af37 0%, #f4d03f 100%)' : 'rgba(232, 121, 166, 0.1)'};
+    color: ${props => props.active ? 'white' : '#e879a6'};
+    transform: translateY(-2px);
+  }
+  
+  @media (max-width: 768px) {
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+  }
+`;
+
+const NoResults = styled.div`
+  font-family: 'Calibri', 'Arial', sans-serif;
+  font-stretch: condensed;
+`;
+
+const Home = () => {
+  const [featuredServices, setFeaturedServices] = useState([]);
+  const [activeServiceTab, setActiveServiceTab] = useState('corrective');
+  const [allServices, setAllServices] = useState([]);
+
+  useEffect(() => {
+    fetchFeaturedServices();
+  }, []);
+
+  const fetchFeaturedServices = async () => {
+    try {
+      const response = await axios.get('/api/services');
+      const services = response.data;
+      setAllServices(services);
+      setFeaturedServices(services.slice(0, 3));
+    } catch (error) {
+      console.error('Error fetching services:', error);
+    }
+  };
+
+  const getFilteredServices = () => {
+    if (!allServices.length) return [];
+    
+    switch (activeServiceTab) {
+      case 'corrective':
+        return allServices.filter(service => 
+          service.category && (
+            service.category.toLowerCase().includes('treatment') ||
+            service.category.toLowerCase().includes('facial') ||
+            service.category.toLowerCase().includes('anti-aging') ||
+            service.category.toLowerCase().includes('peel')
+          )
+        );
+      case 'consultation':
+        return allServices.filter(service => 
+          service.category && service.category.toLowerCase().includes('consultation')
+        );
+      case 'lashes':
+        return allServices.filter(service => 
+          service.category && (
+            service.category.toLowerCase().includes('lash') ||
+            service.category.toLowerCase().includes('brow') ||
+            service.category.toLowerCase().includes('eyebrow') ||
+            service.category.toLowerCase().includes('extensions')
+          )
+        );
+      default:
+        return allServices.slice(0, 6);
+    }
+  };
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  return (
+    <HomeContainer>
+      {/* Hero Section */}
+      <HeroSection>
+        <HeroContent
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          <PowerTagline variants={itemVariants}>
+            EXPERIENCE THE POWER OF<br />
+            PERSONALIZED SKINCARE
+          </PowerTagline>
+
+          <LogoContainer variants={itemVariants}>
+            <img 
+              src="/logo.webp" 
+              alt="Olga's Skincare Studio"
+            />
+          </LogoContainer>
+
+          <BookExperienceButton
+            to="/booking"
+            variants={itemVariants}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <FiClock />
+            BOOK YOUR EXPERIENCE
+          </BookExperienceButton>
+
+          <WelcomeContent variants={itemVariants}>
+            <WelcomeTitle>Welcome to Olga Sabo Skincare Studio</WelcomeTitle>
+            <WelcomeText>
+              At OlgaSabo Skincare Studio, we think differently and our mission is to change the way we treat skin, empowering its innate ability to heal itself to create lasting results without compromise. Our focus is on healing, not harming.
+            </WelcomeText>
+            <WelcomeText>
+              At Olga Sabo Skincare Studio, we believe in a systemic approach to resolving skin concerns. Our treatments combine natural, nourishing ingredients essential to activate repair and address challenging skin conditions with expert techniques to achieve authentic transformations and overall well-being.
+            </WelcomeText>
+            <WelcomeText>
+              At OlgaSabo Skincare Studio, we go more than skin deep to find out the source of common concerns. By integrating medical grade, non-toxic, topical formulas with strategic facial services we address the root causes of many skin issues and help you achieve clear, healthy, and radiant skin.
+            </WelcomeText>
+            <WelcomeText>
+              Experience Personalized Transforming Skin Treatments at Olga Sabo Skincare Studio and discover the difference of Holistic Care.
+            </WelcomeText>
+          </WelcomeContent>
+
+          <LocationSection variants={itemVariants}>
+            <LocationTitle>🌸 Olga Sabo Skincare Studio 🌸</LocationTitle>
+            <LocationSubtitle>AT SOLA SALONS OF MORGAN HILL, CA</LocationSubtitle>
+            <LocationAddress>
+              📍 18585 MONTEREY ROAD SUITE 140 / STUDIO 12<br />
+              MORGAN HILL, CALIFORNIA 95037
+            </LocationAddress>
+            <MapButton 
+              href="https://maps.google.com/maps?q=18585+Monterey+Road+Suite+140,+Morgan+Hill,+CA+95037" 
+              target="_blank"
+              rel="noopener noreferrer"
+              variants={itemVariants}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              📍 Find Us on the Map
+            </MapButton>
+          </LocationSection>
+        </HeroContent>
+      </HeroSection>
+
+      {/* Services Tabs */}
+      <ServicesSection>
+        <SectionContainer>
+          <SectionHeader>
+            <h2>Our Professional Services</h2>
+            <p>Experience our comprehensive range of treatments, from corrective skincare to beauty enhancement services.</p>
+          </SectionHeader>
+
+          <ServiceTabs>
+            <ServiceTab 
+              active={activeServiceTab === 'corrective'}
+              onClick={() => setActiveServiceTab('corrective')}
+            >
+              Corrective Treatments
+            </ServiceTab>
+            <ServiceTab 
+              active={activeServiceTab === 'consultation'}
+              onClick={() => setActiveServiceTab('consultation')}
+            >
+              Consultation
+            </ServiceTab>
+            <ServiceTab 
+              active={activeServiceTab === 'lashes'}
+              onClick={() => setActiveServiceTab('lashes')}
+            >
+              Lashes & Brow Bar
+            </ServiceTab>
+          </ServiceTabs>
+
+          <ItemsGrid>
+            {getFilteredServices().length > 0 ? (
+              getFilteredServices().map((service, index) => (
+                <ItemCard
+                  key={service.id}
+                  variants={itemVariants}
+                  initial="hidden"
+                  whileInView="visible"
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.2 }}
+                >
+                  <ItemImage>
+                    <FiHeart />
+                  </ItemImage>
+                  <ItemContent>
+                    {service.category && <ItemCategory>{service.category}</ItemCategory>}
+                    <ItemTitle>{service.name}</ItemTitle>
+                    <ItemDescription>{service.description}</ItemDescription>
+                    <ItemDetails>
+                      <ItemPrice>${service.price}</ItemPrice>
+                      <ItemDuration>
+                        <FiClock />
+                        {service.duration} min
+                      </ItemDuration>
+                    </ItemDetails>
+                    <Button to="/booking" style={{width: '100%', justifyContent: 'center', marginTop: '0.5rem'}}>
+                      Book This Treatment
+                    </Button>
+                  </ItemContent>
+                </ItemCard>
+              ))
+            ) : (
+              <NoResults style={{gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', color: '#666'}}>
+                {activeServiceTab === 'consultation' && 'Consultation services coming soon! Contact us for personalized skincare advice.'}
+                {activeServiceTab === 'lashes' && 'Lashes & Brow services coming soon! Beautiful enhancements await.'}
+                {activeServiceTab === 'corrective' && 'Corrective treatments loading...'}
+              </NoResults>
+            )}
+          </ItemsGrid>
+          
+          <ViewAllLink to="/services" style={{marginTop: '2rem', display: 'inline-flex'}}>
+            View All Services <FiArrowRight />
+          </ViewAllLink>
+        </SectionContainer>
+      </ServicesSection>
+
+      {/* Contact CTA */}
+      <CTASection>
+        <SectionContainer>
+          <CTATitle>Ready to Transform Your Skin?</CTATitle>
+          <CTASubtitle>
+            Schedule a consultation today and discover the perfect skincare treatment for your unique needs.
+          </CTASubtitle>
+          
+          <ContactInfo>
+            <ContactItem>
+              <FiPhone className="icon" />
+              <div>
+                <h4>Call Us</h4>
+                <p>(555) 123-4567</p>
+              </div>
+            </ContactItem>
+            
+            <ContactItem>
+              <FiMail className="icon" />
+              <div>
+                <h4>Email</h4>
+                <p>hello@olgaskincare.com</p>
+              </div>
+            </ContactItem>
+            
+            <ContactItem>
+              <FiMapPin className="icon" />
+              <div>
+                <h4>Visit Us</h4>
+                <p>123 Beauty Lane, City</p>
+              </div>
+            </ContactItem>
+          </ContactInfo>
+          
+          <Button to="/booking" className="primary" style={{marginTop: '2rem'}}>
+            <FiClock />
+            Book Your Appointment
+          </Button>
+        </SectionContainer>
+      </CTASection>
+    </HomeContainer>
+  );
+};
+
+export default Home; 

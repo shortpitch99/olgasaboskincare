@@ -1,0 +1,21 @@
+{
+  "name": "olga-skincare-website",
+  "version": "1.0.0",
+  "description": "Olga's Skincare Studio - Professional skincare services and products",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "cd backend && npm start",
+    "dev": "concurrently \"cd backend && npm run dev\" \"cd frontend && npm start\"",
+    "build": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm install",
+    "build:frontend": "cd frontend && npm install && npm run build",
+    "deploy:vercel": "npm run build:frontend && vercel --prod",
+    "heroku-postbuild": "npm run build:frontend"
+  },
+  "keywords": ["skincare", "beauty", "spa", "facial", "treatments"],
+  "author": "Olga Sabo Skincare Studio",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.0"
+  }
+} 
