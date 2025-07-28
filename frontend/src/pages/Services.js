@@ -64,9 +64,20 @@ const FilterButton = styled.button`
 
 const ServicesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 400px));
   gap: 2rem;
   margin-top: 2rem;
+  justify-content: center;
+  
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1200px;
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
 `;
 
 const ServiceCard = styled(motion.div)`

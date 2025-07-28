@@ -269,10 +269,15 @@ const ServiceCategorySubtitle = styled.p`
 
 const ServicesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 380px));
   gap: 2rem;
   max-width: 1200px;
   margin: 0 auto;
+  justify-content: center;
+  
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
@@ -542,9 +547,17 @@ const ViewAllLink = styled(Link)`
 // Enhanced service cards
 const ItemsGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 400px));
   gap: 2rem;
   margin-bottom: 3rem;
+  justify-content: center;
+  
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
   
   @media (max-width: 768px) {
     grid-template-columns: 1fr;

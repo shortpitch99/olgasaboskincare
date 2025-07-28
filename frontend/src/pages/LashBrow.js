@@ -34,11 +34,21 @@ const Subtitle = styled.p`
 
 const ServicesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(350px, 400px));
   gap: 30px;
   padding: 0 20px 80px;
   max-width: 1200px;
   margin: 0 auto;
+  justify-content: center;
+  
+  @media (min-width: 1200px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
 `;
 
 const ServiceCard = styled.div`
